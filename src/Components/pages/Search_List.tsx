@@ -18,19 +18,23 @@ import { AppDispatch } from "../../redux/store";
 import { toast, ToastContainer } from "react-toastify";
 import { roleName } from "./auth/authUser";
 import { Permissions } from "../../constants/PermissionConstant";
+import { useStore } from "../../Hooks/useStore";
 
 function Search_List() {
+  const {
+    rootStore: { techSearchstore },
+  } = useStore();
+ 
   const dispatch = useDispatch<AppDispatch>();
 
   const datanumber = 3;
   const todayDate = new Date();
-  const { userSearchData } = useSelector((state: any) => state?.userSearchData);
-
+  // const { userSearchData } = useSelector((state: any) => state?.userSearchData);                                 
   const { userSearchfilterData } = useSelector(
     (state: any) => state?.userSearchfilterData
   );
   let searchWord = useParams();
-
+ console.log(techSearchstore?.searchFilterPost?.payload)
   const postedWithinArr = ["A Week", "A Month", "6 Months", "1 Year", "Custom"];
 
   const [search, setSearch] = useState(null);
@@ -51,9 +55,10 @@ function Search_List() {
   const loadMore = () => {
     setNoOfComponent(noOfComponent + datanumber);
   };
-
-  const SearchData = userSearchfilterData?.payload?.slice(0, noOfComponent);
-
+ 
+  // const SearchData = userSearchfilterData?.payload?.slice(0, noOfComponent);
+  const SearchData = techSearchstore?.searchFilterPost?.payload?.slice(0,noOfComponent)
+  console.log(SearchData,"SearchData--->")
   const handleRating = (e: any) => {
     let dataRating = rating;
 
@@ -73,9 +78,32 @@ function Search_List() {
     //   setRatings(tempFind1);
     // }
 
-    dispatch(
-      searchFilterPost({
-        search: search === null ? searchWord.SeachWord : search,
+    // dispatch(
+    //   searchFilterPost({
+    //     search: search === null ? searchWord.SeachWord : search,
+    //     from: null,
+    //     to: null,
+    //     author: null,
+    //     techstack: null,
+    //     functions: null,
+    //     feature: null,
+    //     sortby: null,
+    //     rating: dataRating,
+    //   })
+    // );
+    techSearchstore.fetchseacrchFilterpost({
+      search: search === null ? searchWord.SeachWord : search,
+      from: null,
+      to: null,
+      author: null,
+      techstack: null,
+      functions: null,
+      feature: null,
+      sortby: null,
+      rating: dataRating,
+    });
+    techSearchstore.fetchseacrchFilterpost({
+      search: search === null ? searchWord.SeachWord : search,
         from: null,
         to: null,
         author: null,
@@ -84,23 +112,32 @@ function Search_List() {
         feature: null,
         sortby: null,
         rating: dataRating,
-      })
-    );
+    })
   };
 
   const handelTopFilter = (e: any) => {
-    dispatch(
-      searchFilterPost({
-        search: search == null ? searchWord.SeachWord : search,
-        from: null,
-        to: null,
-        author: author?.length === 0 ? null : author,
-        techstack: techStack?.length === 0 ? null : techStack,
-        functions: functionalUse?.length === 0 ? null : functionalUse,
-        feature: feature?.length === 0 ? null : feature,
-        sortby: e.target.value,
-      })
-    );
+    // dispatch(
+    //   searchFilterPost({
+    //     search: search == null ? searchWord.SeachWord : search,
+    //     from: null,
+    //     to: null,
+    //     author: author?.length === 0 ? null : author,
+    //     techstack: techStack?.length === 0 ? null : techStack,
+    //     functions: functionalUse?.length === 0 ? null : functionalUse,
+    //     feature: feature?.length === 0 ? null : feature,
+    //     sortby: e.target.value,
+    //   })
+    // );
+    techSearchstore.fetchseacrchFilterpost({
+      search: search == null ? searchWord.SeachWord : search,
+          from: null,
+          to: null,
+          author: author?.length === 0 ? null : author,
+          techstack: techStack?.length === 0 ? null : techStack,
+          functions: functionalUse?.length === 0 ? null : functionalUse,
+          feature: feature?.length === 0 ? null : feature,
+          sortby: e.target.value,
+    })
   };
 
   const handletechStack = (e: any) => {
@@ -134,6 +171,7 @@ function Search_List() {
     }
   };
   const handleFeature = (e: any) => {
+    console.log(e,"Data")
     if (e.target.checked) {
       setFeature([...feature, parseInt(e?.target?.id)]);
       setFilterArr([...filterArr, e?.target?.name]);
@@ -219,30 +257,39 @@ function Search_List() {
 
   const handleSearch = (e: any) => {
     e.preventDefault();
-    dispatch(
-      searchFilterPost({
-        search: search,
-        from,
-        to,
-        author: author?.length === 0 ? null : author,
-        techstack: techStack?.length === 0 ? null : techStack,
-        functions: functionalUse?.length === 0 ? null : functionalUse,
-        feature: feature?.length === 0 ? null : feature,
-      })
-    );
+    // dispatch(
+    //   searchFilterPost({
+    //     search: search,
+    //     from,
+    //     to,
+    //     author: author?.length === 0 ? null : author,
+    //     techstack: techStack?.length === 0 ? null : techStack,
+    //     functions: functionalUse?.length === 0 ? null : functionalUse,
+    //     feature: feature?.length === 0 ? null : feature,
+    //   })
+    // );
+    techSearchstore.fetchseacrchFilterpost({
+      search: search,
+          from,
+          to,
+          author: author?.length === 0 ? null : author,
+          techstack: techStack?.length === 0 ? null : techStack,
+          functions: functionalUse?.length === 0 ? null : functionalUse,
+          feature: feature?.length === 0 ? null : feature,
+    })
   };
 
   const handleClose = (index: any) => {
-    const tempTechStack = userSearchData?.payload?.techstack?.find(
+    const tempTechStack = techSearchstore?.techStacklist?.techstack?.find(
       (a: any, b: any) => a.name === filterArr[index]
     );
-    const tempAuthor = userSearchData?.payload?.authors?.find(
+    const tempAuthor =  techSearchstore?.techStacklist?.authors?.find(
       (a: any, b: any) => a.name === filterArr[index]
     );
-    const tempFunctions = userSearchData?.payload?.functions?.find(
+    const tempFunctions =  techSearchstore?.techStacklist?.functions?.find(
       (a: any, b: any) => a.name === filterArr[index]
     );
-    const tempFeatures = userSearchData?.payload?.features?.find(
+    const tempFeatures =  techSearchstore?.techStacklist?.features?.find(
       (a: any, b: any) => a.name === filterArr[index]
     );
     if (tempTechStack) {
@@ -292,17 +339,26 @@ function Search_List() {
           ? "Data Removed from My Favourties"
           : "Data Added to My Favourites"
       );
-      dispatch(
-        searchFilterPost({
-          search: search === null ? searchWord.SeachWord : search,
-          from,
-          to,
-          author: author?.length === 0 ? null : author,
-          techstack: techStack?.length === 0 ? null : techStack,
-          functions: functionalUse?.length === 0 ? null : functionalUse,
-          feature: feature?.length === 0 ? null : feature,
-        })
-      );
+      // dispatch(
+      //   searchFilterPost({
+      //     search: search === null ? searchWord.SeachWord : search,
+      //     from,
+      //     to,
+      //     author: author?.length === 0 ? null : author,
+      //     techstack: techStack?.length === 0 ? null : techStack,
+      //     functions: functionalUse?.length === 0 ? null : functionalUse,
+      //     feature: feature?.length === 0 ? null : feature,
+      //   })
+      // );
+      techSearchstore.fetchseacrchFilterpost({
+        search: search === null ? searchWord.SeachWord : search,
+            from,
+            to,
+            author: author?.length === 0 ? null : author,
+            techstack: techStack?.length === 0 ? null : techStack,
+            functions: functionalUse?.length === 0 ? null : functionalUse,
+            feature: feature?.length === 0 ? null : feature,
+      })
     }
   };
 
@@ -319,6 +375,16 @@ function Search_List() {
         //rating: ratings?.length == 0 ? null : ratings
       })
     );
+    techSearchstore.fetchseacrchFilterpost({
+        search: search == null ? searchWord.SeachWord : search,
+        from: from,
+        to: to,
+        author: author?.length === 0 ? null : author,
+        techstack: techStack?.length == 0 ? null : techStack,
+        functions: functionalUse?.length === 0 ? null : functionalUse,
+        feature: feature?.length == 0 ? null : feature,
+        //rating: ratings?.length == 0 ? null : ratings
+    })
   }, [techStack, functionalUse, feature, author, to, from, search]);
 
   useEffect(() => {
@@ -388,7 +454,7 @@ function Search_List() {
               <div className="filter-block filter-border">
                 <h5>Tech Stack</h5>
                 <div className="filter-scroll">
-                  {userSearchData?.payload?.techstack?.map((data: any) => {
+                  {techSearchstore?.techStacklist?.techstack.map((data: any) => {
                     return (
                       <div className="custom-control custom-checkbox mr-sm-2 ">
                         <input
@@ -415,7 +481,7 @@ function Search_List() {
               <div className="filter-block filter-border">
                 <h5>Functional Use</h5>
                 <div className="filter-scroll">
-                  {userSearchData?.payload?.functions?.map((data: any) => {
+                  {techSearchstore?.techStacklist?.functions?.map((data: any) => {
                     return (
                       <div className="custom-control custom-checkbox mr-sm-2 ">
                         <input
@@ -442,7 +508,7 @@ function Search_List() {
               <div className="filter-block filter-border">
                 <h5>Feature</h5>
                 <div className="filter-scroll">
-                  {userSearchData?.payload?.features?.map((data: any) => {
+                  {techSearchstore?.techStacklist?.features?.map((data: any) => {
                     return (
                       <div className="custom-control custom-checkbox mr-sm-2">
                         <input
@@ -469,7 +535,7 @@ function Search_List() {
               <div className="filter-block filter-border">
                 <h5>Author</h5>
                 <div className="filter-scroll">
-                  {userSearchData?.payload?.authors?.map(
+                  {techSearchstore?.techStacklist?.authors?.map(
                     (data: any, index: any) => {
                       return (
                         <div className="custom-control custom-checkbox mr-sm-2 ">
@@ -742,7 +808,7 @@ function Search_List() {
               <div className="p-4 search_list_wrapper">
                 <div className="page-title">
                   <h4>
-                    {userSearchfilterData?.payload?.length} Result for{" "}
+                    {techSearchstore?.searchFilterPost?.payload?.length} Result for{" "}
                     {searchWord.SeachWord}
                   </h4>
                 </div>

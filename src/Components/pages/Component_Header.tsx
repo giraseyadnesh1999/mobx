@@ -9,8 +9,12 @@ import { AppDispatch } from "../../redux/store";
 import { roleName, getToken } from "./auth/authUser";
 import { Permissions } from "../../constants/PermissionConstant";
 import SecureLS from "secure-ls";
+import { useStore } from "../../Hooks/useStore";
 function Component_Header() {
   // get urlPath name
+  const {
+    rootStore: { loginStore },
+  } = useStore();
   const location = useLocation();
   const ls: any = new SecureLS();
   const dispatch = useDispatch<AppDispatch>();
@@ -28,7 +32,9 @@ function Component_Header() {
     var tokenData = ls?.get("refreshtoken");
 
     const tokenString: any = { token: tokenData?.data };
-    dispatch(refreshToken(tokenString));
+    // dispatch(refreshToken(tokenString));
+    console.log(tokenString,"dtring")
+    loginStore.fetchreffreshToken(tokenString)
   };
 
   const data: any = { search: decoded?.email };
@@ -42,7 +48,7 @@ function Component_Header() {
   };
   const fullName = ls?.get("username")?.data;
   const profileImage: any = ls?.get("userImg")?.data;
-  console.log(profileImage);
+  
   useEffect(() => {
     profileFun();
   }, []);

@@ -10,7 +10,6 @@ const fetchFunction = async (url: any) => {
         "Content-Type": "application/json",
       },
     });
-
     return data;
   } catch (error) {
     return error;

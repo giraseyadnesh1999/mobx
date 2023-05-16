@@ -1,6 +1,7 @@
 import React, { Fragment } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import ProtectedRoute from "./components/pages/route/ProtectedRoute";
+import PublicRoute from "./components/pages/route/PublicRoute";
 import Login from "./components/pages/auth/Login";
 import ResuableComponents from "./components/pages/ResuableComponents";
 import ManageRole from "./components/pages/Manage_Role";
@@ -65,7 +66,7 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route path="/" element={<Login />} />
+          <Route path="/" element={<PublicRoute><Login/></PublicRoute>} />
           <Route path="/logout" element={<LogOut />} />
           <Route
             path="/reusableComponent"

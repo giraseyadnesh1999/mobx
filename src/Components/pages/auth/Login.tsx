@@ -1,24 +1,27 @@
 import React, { Fragment, useEffect, useState } from "react";
 import Logo from "../../../images/Rishabh-Software-logo.png";
-import { useDispatch, useSelector } from "react-redux";
-import { login } from "../../../redux/action/userAction";
-import { AppDispatch } from "../../../redux/store";
 import "../../../assets/common/css/main.css";
-import { BrowserRouter as Router, useNavigate, Link } from "react-router-dom";
+import {  useNavigate, Link } from "react-router-dom";
 import { getToken } from "./authUser";
 import SecureLS from "secure-ls";
+import { useStore } from "../../../Hooks/useStore";
+import { observer } from "mobx-react-lite";
 function Login() {
   const ls = new SecureLS();
+  const {
+    rootStore: { loginStore },
+  } = useStore();
+  console.log("login", loginStore.userDetails?.status)
   const userLoginEmail: any = ls.get("userEmail")?.data;
   const userPassword: any = ls.get("userPassword")?.data;
   const rememberMe: any = ls.get("rememberMe")?.data;
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordShown, setPasswordShown] = useState(false);
-  const dispatch = useDispatch<AppDispatch>();
+
   const navigate = useNavigate();
-  const { user } = useSelector((state: any) => state.userlogin);
- 
+  // const { user } = useSelector((state: any) => state.userlogin);
+  // console.log(loginStore?.rootStore?.loginStore?.userDetails?.message,"1")
   useEffect(() => {
     if (rememberMe) {
       setEmail(userLoginEmail);
@@ -32,12 +35,15 @@ function Login() {
   }, []);
 
   useEffect(() => {
+    console.log("Entered")
     document.body.className = "app login_bg";
 
     if (getToken()) {
+      console.log('navigate');
+      
       navigate("/dashboard");
     }
-  }, [navigate, user?.status]);
+  }, [navigate, loginStore.userDetails]);
 
   // password toggle Handler
   const togglePassword = () => {
@@ -55,12 +61,13 @@ function Login() {
   };
 
   // Login form Submit
-  const loginHandle = (e: { preventDefault: () => void }) => {
+  const loginHandle = async (e: { preventDefault: () => void }) => {
+    console.log("!!!")
     e.preventDefault();
     ls.set("userEmail", { data: email });
     ls.set("userPassword", { data: password });
-
-    dispatch(login(email, password));
+    await loginStore.fetchUserToken(email, password);
+    
   };
 
   return (
@@ -113,8 +120,8 @@ function Login() {
                       </span>
                     </div>
                     <div id="#" className="invalid-feedback">
-                      {user?.response?.data?.status === false
-                        ? user?.response?.data?.message
+                      {loginStore.userDetails?.status === false
+                        ? loginStore.userDetails?.message
                         : ""}
                     </div>
                   </div>
@@ -171,4 +178,4 @@ function Login() {
   );
 }
 
-export default Login;
+export default observer(Login);

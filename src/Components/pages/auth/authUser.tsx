@@ -3,7 +3,6 @@ import SecureLS from "secure-ls";
 export const getToken = () => {
   const ls: any = new SecureLS();
   var token = ls?.get("token");
-
   return token?.data;
 };
 

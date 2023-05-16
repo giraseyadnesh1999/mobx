@@ -7,8 +7,8 @@ import {
   topcategories,
   RecentlyAdded,
   TrendingData,
-  userSearchGetData,
-  searchFilterPost,
+  // userSearchGetData,
+  // searchFilterPost,
   discoverMyInterests,
 } from "../../redux/action/userAction";
 
@@ -16,14 +16,18 @@ import { AppDispatch } from "../../redux/store";
 import ComponentHeader from "./Component_Header";
 import ComponentFooter from "./Component_Footer";
 import ComponentNavbar from "./componentNavbar";
+import { useStore } from "../../Hooks/useStore";
+import { observer } from "mobx-react-lite";
 function ResuableComponents() {
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
-
+  const {
+    rootStore: { techSearchstore },
+  } = useStore();
   const { categories } = useSelector((state: any) => state?.topcategories);
   const { Recentlydata } = useSelector((state: any) => state?.RecentlyAdded);
   const { Trendingdata } = useSelector((state: any) => state?.TrendingData);
-
+  console.log(techSearchstore,"techSearchstore---->")
   const [searchWord, setSearchWord] = useState<any>(null);
   const [searchbarErr, setSearchbarErr] = useState<any>({});
   const { discoverMyInterestsData } = useSelector(
@@ -45,8 +49,10 @@ function ResuableComponents() {
       setSearchbarErr(searchbarErrr);
     } else {
       navigate(`/Search_list/${searchWord}`);
-      dispatch(userSearchGetData(searchWord));
-      dispatch(searchFilterPost(dataObj));
+      // dispatch((searchWord));
+      techSearchstore.fetchtechStackList(searchWord)
+      // dispatch(searchFilterPost(dataObj));
+      techSearchstore.fetchseacrchFilterpost(dataObj)
     }
   };
 
@@ -360,4 +366,4 @@ function ResuableComponents() {
   );
 }
 
-export default ResuableComponents;
+export default observer(ResuableComponents);
